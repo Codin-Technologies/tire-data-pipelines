@@ -65,5 +65,24 @@ INSERT INTO tire_alerts (alert_id, sensor_id, vehicle_id, timestamp, alert_type,
 ('sample_alert_2', 'V002-RR', 'V002', NOW() - INTERVAL '5 minutes', 'HIGH_TEMPERATURE', 'MEDIUM', 'Temperature 82.3°C is above threshold 80°C', 82.3)
 ON CONFLICT (alert_id) DO NOTHING;
 
+-- Create vehicles table
+CREATE TABLE vehicles (
+    vehicle_id VARCHAR(100) PRIMARY KEY,
+    owner_email VARCHAR(255) NOT NULL,
+    driver_email VARCHAR(255) NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Verify tables were created
 \dt
+
+-- Insert sample vehicle data
+INSERT INTO vehicles (vehicle_id, owner_email, driver_email) VALUES
+('V001', 'frankkiruma05@gmail.com', 'frankkiruma05@gmail.com'),
+('V002', 'frankkiruma05@gmail.com', 'frankkiruma05@gmail.com'),
+('V003', 'frankkiruma05@gmail.com', 'frankkiruma05@gmail.com'),
+('V004', 'frankkiruma05@gmail.com', 'frankkiruma05@gmail.com'),
+('V005', 'frankkiruma05@gmail.com', 'frankkiruma05@gmail.com')
+ON CONFLICT (vehicle_id) DO UPDATE 
+SET owner_email = EXCLUDED.owner_email,
+    driver_email = EXCLUDED.driver_email;
