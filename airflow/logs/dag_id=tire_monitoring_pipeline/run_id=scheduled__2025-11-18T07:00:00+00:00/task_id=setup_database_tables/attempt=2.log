@@ -1,0 +1,62 @@
+[2025-11-18T08:20:16.634+0000] {taskinstance.py:1956} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: tire_monitoring_pipeline.setup_database_tables scheduled__2025-11-18T07:00:00+00:00 [queued]>
+[2025-11-18T08:20:16.637+0000] {taskinstance.py:1956} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: tire_monitoring_pipeline.setup_database_tables scheduled__2025-11-18T07:00:00+00:00 [queued]>
+[2025-11-18T08:20:16.637+0000] {taskinstance.py:2170} INFO - Starting attempt 2 of 3
+[2025-11-18T08:20:16.642+0000] {taskinstance.py:2191} INFO - Executing <Task(PostgresOperator): setup_database_tables> on 2025-11-18 07:00:00+00:00
+[2025-11-18T08:20:16.644+0000] {standard_task_runner.py:60} INFO - Started process 67 to run task
+[2025-11-18T08:20:16.646+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'tire_monitoring_pipeline', 'setup_database_tables', 'scheduled__2025-11-18T07:00:00+00:00', '--job-id', '7', '--raw', '--subdir', 'DAGS_FOLDER/tire_monitoring_dag.py', '--cfg-path', '/tmp/tmpldoddzmg']
+[2025-11-18T08:20:16.646+0000] {standard_task_runner.py:88} INFO - Job 7: Subtask setup_database_tables
+[2025-11-18T08:20:16.666+0000] {task_command.py:423} INFO - Running <TaskInstance: tire_monitoring_pipeline.setup_database_tables scheduled__2025-11-18T07:00:00+00:00 [running]> on host 7e3acef12e93
+[2025-11-18T08:20:16.693+0000] {taskinstance.py:2480} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='tire-team' AIRFLOW_CTX_DAG_ID='tire_monitoring_pipeline' AIRFLOW_CTX_TASK_ID='setup_database_tables' AIRFLOW_CTX_EXECUTION_DATE='2025-11-18T07:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-11-18T07:00:00+00:00'
+[2025-11-18T08:20:16.694+0000] {sql.py:276} INFO - Executing: 
+        CREATE TABLE IF NOT EXISTS tire_alerts (
+            id SERIAL PRIMARY KEY,
+            alert_id VARCHAR(255) UNIQUE NOT NULL,
+            sensor_id VARCHAR(100) NOT NULL,
+            vehicle_id VARCHAR(100) NOT NULL,
+            timestamp BIGINT NOT NULL,
+            alert_type VARCHAR(50) NOT NULL,
+            severity VARCHAR(20) NOT NULL,
+            description TEXT,
+            triggering_value FLOAT,
+            is_resolved BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
+        CREATE TABLE IF NOT EXISTS tire_aggregations (
+            id SERIAL PRIMARY KEY,
+            sensor_id VARCHAR(100) NOT NULL,
+            vehicle_id VARCHAR(100) NOT NULL,
+            window_start TIMESTAMPTZ NOT NULL,
+            window_end TIMESTAMPTZ NOT NULL,
+            window_size VARCHAR(10) NOT NULL,
+            avg_pressure FLOAT NOT NULL,
+            avg_temperature FLOAT NOT NULL,
+            min_pressure FLOAT NOT NULL,
+            max_pressure FLOAT NOT NULL,
+            min_temperature FLOAT NOT NULL,
+            max_temperature FLOAT NOT NULL,
+            record_count INTEGER NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        );
+        
+[2025-11-18T08:20:16.700+0000] {taskinstance.py:2698} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 433, in _execute_task
+    result = execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/operators/sql.py", line 277, in execute
+    hook = self.get_db_hook()
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/operators/sql.py", line 188, in get_db_hook
+    return self._hook
+  File "/usr/local/lib/python3.8/functools.py", line 967, in __get__
+    val = self.func(instance)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/operators/sql.py", line 150, in _hook
+    conn = BaseHook.get_connection(conn_id)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/hooks/base.py", line 82, in get_connection
+    conn = Connection.get_connection_from_secrets(conn_id)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/connection.py", line 479, in get_connection_from_secrets
+    raise AirflowNotFoundException(f"The conn_id `{conn_id}` isn't defined")
+airflow.exceptions.AirflowNotFoundException: The conn_id `tire_postgres` isn't defined
+[2025-11-18T08:20:16.701+0000] {taskinstance.py:1138} INFO - Marking task as UP_FOR_RETRY. dag_id=tire_monitoring_pipeline, task_id=setup_database_tables, execution_date=20251118T070000, start_date=20251118T082016, end_date=20251118T082016
+[2025-11-18T08:20:16.707+0000] {standard_task_runner.py:107} ERROR - Failed to execute job 7 for task setup_database_tables (The conn_id `tire_postgres` isn't defined; 67)
+[2025-11-18T08:20:16.743+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2025-11-18T08:20:16.754+0000] {taskinstance.py:3280} INFO - 0 downstream tasks scheduled from follow-on schedule check
